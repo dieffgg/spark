@@ -1,8 +1,0 @@
-|summary|Company| Person|             Sales|
-
-|  count|     12|     12|                12|
-|   mean|   null|   null| 360.5833333333333|
-| stddev|   null|   null|250.08742410799007|
-|    min|   APPL|  Chris|             120.0|
-|    max|   MSFT|Vanessa|             870.0|
-
