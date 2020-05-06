@@ -1,0 +1,52 @@
+1)Group by do histórico de vendas dia por Produto(apenas etanol, gasolina, diesel s10 e diesel s500)  e segmento(b2b e varejo) para cada mês. Importante:não é calculado etanol e gasolina para b2b, pois praticamente não é comercializado para esse segmento. Tabela output seria a Volume Histórico, headers: Mês/Ano/Produto/Segmento/Valor(m3) 
+
+
+2)Cálculo da gasolina equivalente para cada mês do histórico: Gasolina + Etanol*Coeficiente energético. O coeficiente energético está em uma tabela dentro do excel, sendo um valor para cada período. Tabela output seria a Equivalente Histórico, headers: Mês/Ano/Produto/Segmento/Valor Equivalente(m3) 
+
+3)Cálculo do diesel equivalente para cada mês do histórico: Diesel S10+Diesel S500 
+
+4)Tabela dia útil:É criado uma classificação para cada dia dos histórico de equivalente gasolina e diesel para ambos segmentos. A classificação do dia é feita com base Tipo de dia & Tipo de semana, gerando uma combinação de mais de 70 tipos. É realizado um groupby para cada tipo, calculando o volume médio de cada um. É feita uma média do grupo de média dos dias considerado padrão (6 dias seg->sab sem feriados próximos). Divide-se o volume médio de cada dia por esse média dos dias normais, chegando-se ao valor do peso do dia útil para cada tipo de dia. Todo o calendário é classificado com base nesse peso e agrupado por mês, encontrando-se tanto o valor de dias úteis do passado e também para o futuro. Output: Tabela DU Produto/Mês/Ano/Segmento/Total Dias úteis ponderados. 
+
+5)VMD Histórico: Dividir cada valor da tabela dos Equivalentes pelo respectivo valor de dias úteis. Tabela output VMD Histórico:Mês/Ano/Produto/Segmento/Valor VMD Equivalente(m3) 
+
+
+6)Sazonalidade histórica:Para cada mês do histórico de VMD calcular o variação entre cada mês: (VMD M1/VMD M-1)-1 .Tabela Output, Sazonalidade Histórica:Mês/Ano/Produto/Segmento/Variação 
+
+7)Projeção VMD: APlicar o seguinte racional: Projeção M+1:Valor do VMD último mês completo na base histórica*(Variação do último ano entre o mês em questão e o anterior) Projeção M+2:Projeção M+1*(Variação do último ano entre o mês em questão e o anterior) Projeção M+3:Projeção M+2*(Variação do último ano entre o mês em questão e o anterior) Projeção M+12:Projeção M+11*(Variação do último ano entre o mês em questão e o anterior) Tabela Output, Projeção VMD:Mês/Ano/Produto/Segmento/VMD Projetado 
+
+8)Projeção Volume: realizar a normalização do VMD para Volume total. Com a tabela de Projeção VMD a seguinte conta: Projeção M+X*(Valor dia útil do mês/equivalente/segmento em questão). Output: Mês/Ano/Produto/Segmento/Volume total projetado 9)Tabela de share Terminal produto/segmento:para o histórico de VMD construir quanto representa VMD do terminal no todo para cada mês em relação a sua granularidade maior(Produto/Segmento/data). Sugestão: criar o agrupamento terminal desde o item 1).Output: Terminal/Produto/Segmento/Mês/Ano/% Rateio 
+
+9)Rateio do Mix Gasolina/Etanol e S10/S500. É aprovado o número do mix pelo comitê para etanol/gasolina e diesel varejo e diesel b2b. Para cada um desses é realizado o rateio com base no último mix de cada base. Executa-se o rateio da segunte forma a)Constrói-se a tabela do MIX(Volume etanol/(Volume etanol+gasolina) para cada terminal/segmento/produto e a variação % entre meses subsequentes. b)Calcula-se a variação média dos últimos 3 meses c)Coleta-se o rateio do último mês de um terminal para o produto/segmento e aplica-se a variação média.d)Delta MIX:Soma-se c) para cada produto/segmento e subtrai-se o valor do Mix vindo do comitê. e)Aplica-se esse Delta em todos as linha do segmento/produto correspondente para chegar no mesmo mix total do comitê. f)Aplica-se o resutaldo final no Volume total do produto(equivalente). Output: Base/Produto(quebrado)/Segmento/Volume/Mês/Ano  
+
+
+
+
+Isso deve representar uns 80% do cálculo total. Ainda tem a parte de inteligencia de mercado. 
+
+
+Ponto importante é vermos quão viável é fazer tudo isso e quanto tempo demora. 
+
+
+Mas fazer a parte dos dias uteis pode ser muito interessante para uso do projeto e uso imediato pelo negócio
+
+
+a raw passar pro ingested e depois pro primary
+no fim ele vai linkar com a master table
+raw-to-ingested é so ler os arquivos e salvar em parque
+ingested-to primary vc faz as combinações
+a entrada nao era de bases diferentes?
+prq tem só um task?
+são 3 bases de entrada
+cada uma tem de ter sua ingestao separada
+e vc precisa juntar tudo na primary
+e só na feature que vc faz a normalização dela pra ser incluída na master table, que é aquele trecho de código que te mandei aqui no chat
+uma das bases nós ja temos ingeridas no Lake
+as bases são relacionadas pra conseguir os dias uteis de cada cidade/estado
+entao tem uma lista de cidades, um calendario e um de_para de feriados
+
+o raw é o dado bruto
+no ingested é ele movido do raw e salvo tudo com string
+no primary começa a fazer as transformações necessárias pra deixar com os campos formatados e com o dataframe com as colunas necessárias
+no feature é onde já está agregando inteligencia para base
+no caso do dias uteis é só aquela linha de codigo q tinha te mandado ontem
+
