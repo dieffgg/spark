@@ -2,10 +2,10 @@
   "base_url": "/",
   "hostname": "0.0.0.0",
   "notebook_dir": "/home/jovyan",
-  "password": true,
+  "password": false,
   "pid": 6,
   "port": 8888,
   "secure": false,
-  "token": "",
+  "token": "fd4618cac803fb1e21ae687c5ceb5ba82f0546f86680f822",
   "url": "http://0.0.0.0:8888/"
 }
